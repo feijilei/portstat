@@ -5,6 +5,8 @@ import os
 import time
 import argparse
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 try:
     from urllib.parse import urlencode
@@ -21,8 +23,8 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-__author__ = 'imlonghao'
-__version__ = '0.0.8'
+__author__ = 'imlonghao, rallets'
+__version__ = '0.0.9'
 
 
 def version():
@@ -108,7 +110,7 @@ def upload(portGroups):
         ret = requests.post('%s&time=%s' % (each.keys()[0], str(int(time.time()))),
                       json={
                           'portstat': each.values()[0]
-                      }).json()
+                      }, verify=False).json()
         flushDrop()
         for port in ret['drop_ports']:
             os.system('/sbin/iptables -A DROP_PORTS -p tcp --dport %s -j DROP' % port)
